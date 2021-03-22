@@ -1,0 +1,30 @@
+{
+  "name": "microprojeto-2",
+  "version": "1.0.0",
+  "description": "",
+  "main": "src/server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node src/server.js",
+    "start:dev": "nodemon src/sever.js"
+  },
+  "keywords": [
+    "websocket",
+    "node",
+    "food order",
+    "pet"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/alexaragao/"
+  },
+  "author": "Alexandre Aragão (@alexaragao at github)",
+  "license": "ISC",
+  "devDependencies": {
+    "nodemon": "^2.0.7"
+  },
+  "dependencies": {
+    "express": "^4.17.1",
+    "ws": "^7.4.4"
+  }
+}

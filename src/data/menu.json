@@ -1,0 +1,24 @@
+{
+  "items": [
+    {
+      "name": "Ração Seca Nutrilus Pro Frango & Carne para Cães Adultos",
+      "price_br": 158.9,
+      "image": "https://www.petlove.com.br/images/products/233621/product/Imagem5.png?1615927657"
+    },
+    {
+      "name": "Ração Seca Affinity Gran Plus Gourmet Peru & Arroz para Cães Adultos Raças Médias e Grandes",
+      "price_br": 152.9,
+      "image": "https://www.petlove.com.br/images/products/214438/product/Ra%C3%A7%C3%A3o_Seca_Affinity_Gran_Plus_Gourmet_Peru___Arroz_para_C%C3%A3es_Adultos_Ra%C3%A7as_M%C3%A9dias_e_Grandes_-_15_Kg_2422030_1.jpg?1570652420"
+    },
+    {
+      "name": "Suplemento Vitamínico Botupharma Pet Food Dog Adulto Manutenção",
+      "price_br": 94.32,
+      "image": "https://www.petlove.com.br/images/products/199492/product/Suplemento_Vitam%C3%ADnico_Botupharma_Pet_Food_Dog_Adulto_Manuten%C3%A7%C3%A3o_-_100_g_1949715.jpg?1556469477"
+    },
+    {
+      "name": "Ração Seca Origens Premium Especial Frango e Cereais Integrais para Cão Sênior",
+      "price_br": 139.41,
+      "image": "https://www.petlove.com.br/images/products/228007/product/Ra%C3%A7%C3%A3o_Seca_Origens_Premium_Especial_Frango_e_Cereais_Integrais_para_C%C3%A3o_S%C3%AAnior_2362100.jpg?1598275984"
+    }
+  ]
+}

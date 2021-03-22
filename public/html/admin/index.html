@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+
+    <link rel="icon" type="image/png" href="../images/favicon.png" />
+    <link rel="stylesheet" href="../css/main.css" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>iPetFood (Administrativo)</title>
+
+    <!-- Socket configuration -->
+    <script>
+      var socket = new WebSocket("ws://localhost:8088");
+
+      socket.onopen = function onWebSocketConnection() {
+        socket.onmessage = function onMessageHandler(message) {
+          var parsedMessage = JSON.parse(message.data);
+          var { event, content } = parsedMessage;
+
+          if (event) {
+            switch (event) {
+              case "deliveries-update":
+                // updateMenu(content);
+                break;
+              case "menu-update":
+                updateMenu(content);
+                break;
+            }
+          }
+        };
+
+        socket.send(
+          JSON.stringify({
+            event: "admin-connect",
+          })
+        );
+      };
+
+      function storeItem(e) {
+        e.preventDefault();
+
+        var itemName = document.getElementById("form-item-name").value;
+        var itemPrice = document.getElementById("form-item-price").value;
+
+        if (!itemName) {
+          alert("Insira o nome do item!");
+          return;
+        }
+
+        if (!itemPrice) {
+          alert("Insira o preço do item!");
+          return;
+        }
+
+        itemPrice = parseFloat(itemPrice);
+        if (isNaN(itemPrice)) {
+          alert("Insira um preço válido ao item! (precisa ser numérico)");
+          return;
+        }
+
+        var item = {
+          name: itemName,
+          price_br: itemPrice,
+          image: document.getElementById("form-item-image").value,
+        };
+
+        socket.send(
+          JSON.stringify({
+            event: "store-item",
+            content: item,
+          })
+        );
+      }
+
+      function deleteItem(item) {
+        socket.send(JSON.stringify({
+          event: 'delete-item',
+          content: item.name
+        }));
+      }
+
+      function updateMenu(items) {
+        var menuElement = document.getElementById("menu");
+        menuElement.innerHTML = '';
+
+        for (let item of items) {
+          var gridElement = document.createElement("div");
+
+          var itemElement = document.createElement("div");
+          itemElement.className = "menu-item";
+
+          // item.image
+          var itemImage = document.createElement("img");
+          itemImage.src = item.image;
+          itemElement.appendChild(itemImage);
+
+          // item.name
+          var itemName = document.createElement("p");
+          itemName.className = "mv-2 black-high";
+          itemName.innerHTML = item.name;
+          itemElement.appendChild(itemName);
+
+          var _div = document.createElement("div");
+
+          // item.price
+          var itemPrice = document.createElement("p");
+          itemPrice.className = "menu-item-price";
+          itemPrice.innerHTML = item.price_br.toLocaleString("pt-BR", {
+            style: "currency",
+            currency: "BRA",
+          });
+          _div.appendChild(itemPrice);
+
+          // item.buy_button
+          var itemBuyButton = document.createElement("button");
+          itemBuyButton.className = "btn-danger mt-2";
+          itemBuyButton.innerHTML = "Excluir";
+          itemBuyButton.onclick = function () { deleteItem(item); };
+          _div.appendChild(itemBuyButton);
+
+          itemElement.appendChild(_div);
+
+          gridElement.appendChild(itemElement);
+          menuElement.appendChild(gridElement);
+        }
+      }
+    </script>
+  </head>
+
+  <body>
+    <!-- Header -->
+    <header class="page-header">
+      <a href="/"><img src="../images/icon.png" /></a>
+      <h2 class="white-high">iPetFood (Administrativo)</h2>
+    </header>
+
+    <!-- Page content -->
+    <div style="display: flex;">
+      <div style="padding: 16px; flex-basis: 40%;">
+        <h2 class="black-high">Gerenciamento de itens</h2>
+
+        <form>
+          <div class="form-group mt-2">
+            <label class="black-high">Nome do item</label>
+            <input id="form-item-name" type="text" placeholder="Nome do item" />
+          </div>
+
+          <div class="form-group mt-2">
+            <label class="black-high">Valor do item (R$)</label>
+            <input id="form-item-price" placeholder="Valor do item" />
+          </div>
+
+          <div class="form-group mt-2">
+            <label class="black-high">Foto do item</label>
+            <input id="form-item-image" type="url" placeholder="Foto do item" />
+          </div>
+
+          <button class="btn-secondary mt-2" onclick="storeItem(event)">
+            Cadastrar item
+          </button>
+        </form>
+      </div>
+      
+      <div id="menu" style="padding: 16px; flex-basis: 60%;"></div>
+    </div>
+  </body>
+</html>

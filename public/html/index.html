@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+
+    <link rel="icon" type="image/png" href="images/favicon.png" />
+    <link rel="stylesheet" href="css/main.css" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>iPetFood - O seu pet merece!</title>
+
+    <!-- Socket configuration -->
+    <script>
+      var cart = [];
+      var socket = new WebSocket("ws://localhost:8088");
+
+      socket.onopen = function onWebSocketConnection() {
+        socket.onmessage = function onMessageHandler(message) {
+          var parsedMessage = JSON.parse(message.data);
+          var { event, content } = parsedMessage;
+
+          if (event) {
+            switch (event) {
+              case "menu-update":
+                updateMenu(content);
+                break;
+            }
+          }
+        };
+      };
+
+      function addItemToCart(item) {
+        var isItemInCart = false;
+        for (let cartItem of cart) {
+          if (cartItem.item === item) {
+            isItemInCart = true;
+            break;
+          }
+        }
+
+        if (!isItemInCart) {
+          cart.push({
+            item,
+            amount: 1,
+          });
+        } else {
+          for (let cartItem of cart) {
+            if (cartItem.item === item) {
+              ++cartItem.amount;
+              break;
+            }
+          }
+        }
+        updateCart();
+      }
+
+      function updateCart() {
+        var itemsContainer = document.getElementById("cart");
+        itemsContainer.innerHTML = "";
+
+        for (let cartItem of cart) {
+          var itemElement = document.createElement("div");
+          itemElement.className = "cart-item";
+          itemElement.style.marginRight = '16px';
+          
+          // item.image
+          var itemImage = document.createElement("img");
+          itemImage.src = cartItem.item.image;
+          itemElement.appendChild(itemImage);
+
+          // item.name
+          var itemName = document.createElement("div");
+          itemName.className = "cart-item-o";
+          itemName.innerHTML = cartItem.amount;
+          itemElement.appendChild(itemName);
+
+          itemsContainer.appendChild(itemElement);
+        }
+      }
+
+      function updateMenu(items) {
+        var menuElement = document.getElementById("menu");
+        menuElement.innerHTML = '';
+
+        for (let item of items) {
+          var gridElement = document.createElement("div");
+
+          var itemElement = document.createElement("div");
+          itemElement.className = "menu-item";
+
+          // item.image
+          var itemImage = document.createElement("img");
+          itemImage.src = item.image;
+          itemElement.appendChild(itemImage);
+
+          // item.name
+          var itemName = document.createElement("p");
+          itemName.className = "mv-2 black-high";
+          itemName.innerHTML = item.name;
+          itemElement.appendChild(itemName);
+
+          var _div = document.createElement("div");
+
+          // item.price
+          var itemPrice = document.createElement("p");
+          itemPrice.className = "menu-item-price";
+          itemPrice.innerHTML = item.price_br.toLocaleString("pt-BR", {
+            style: "currency",
+            currency: "BRA",
+          });
+          _div.appendChild(itemPrice);
+
+          // item.buy_button
+          var itemBuyButton = document.createElement("button");
+          itemBuyButton.className = "btn-secondary mt-2";
+          itemBuyButton.innerHTML = "Comprar";
+          itemBuyButton.onclick = function () { addItemToCart(item); };
+          _div.appendChild(itemBuyButton);
+
+          itemElement.appendChild(_div);
+
+          gridElement.appendChild(itemElement);
+          menuElement.appendChild(gridElement);
+        }
+      }
+
+      function sendMessage() {
+        var message = document.getElementById("message-input").value;
+        socket.send(message);
+      }
+
+      function finishDelivery(e) {
+        socket.send(JSON.stringify({
+          event: 'new-delivery',
+          content: cart
+        }));
+      }
+    </script>
+  </head>
+
+  <body>
+    <!-- Header -->
+    <header class="page-header">
+      <a href="/"><img src="images/icon.png" /></a>
+      <a href="/"><h2 class="white-high">iPetFood</h2></a>
+    </header>
+
+    <!-- Footer Delivery  -->
+    <footer class="page-footer">
+      <div id="cart" class="delivery-items-container"></div>
+      <button class="btn-secondary" onclick="finishDelivery()">
+        Solicitar entrega
+      </button>
+    </footer>
+
+    <!-- Page content -->
+    <div>
+      <div id="menu"></div>
+    </div>
+  </body>
+</html>
